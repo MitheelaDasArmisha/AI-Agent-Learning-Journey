@@ -19,7 +19,7 @@ Topics include:
 ## Lectures
 
 - Lecture 1.1 — Introduction to Server-Side Programming
-- Lecture 1.2 — HTTP Request & Response
+- Lecture 1.2 — client server overview
 - Lecture 1.3 — Static vs Dynamic Websites
 - Lecture 1.4 — Client vs Server Side
 - Lecture 1.5 — Web Frameworks
