@@ -1,0 +1,548 @@
+# 🛡️ Lecture 08: Website Security
+
+> **Course:** Server-Side Web Development
+>
+> **Level:** Beginner
+>
+> **Lecture Duration:** 2 Hours
+>
+> **Prerequisites:** Basic understanding of websites and client-server architecture
+
+---
+
+# 📖 Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Understand what website security is.
+- Explain why websites get hacked.
+- Identify common web security threats.
+- Understand how hackers attack websites.
+- Learn how developers protect web applications.
+- Explain why frameworks like Django include built-in security protections.
+
+---
+
+# 🌍 Introduction
+
+Imagine you build your first website.
+
+It has:
+
+- Login Page
+- Registration Page
+- User Profile
+- Payment System
+- Database
+
+Everything works perfectly.
+
+A week later...
+
+- Users cannot log in.
+- Passwords are leaked.
+- Someone deletes the database.
+- Money is transferred without users knowing.
+
+What happened?
+
+Your website was functional...
+
+But **it wasn't secure.**
+
+Website security is about protecting websites from attackers who want to steal, modify, or destroy information.
+
+---
+
+# Chapter 1 — What is Website Security?
+
+## Definition
+
+Website security is the practice of protecting websites against unauthorized access, modification, destruction, or disruption.
+
+Simply put,
+
+> Website security keeps hackers away from your website and protects users' information.
+
+---
+
+## Real-Life Analogy
+
+Imagine your house.
+
+It has:
+
+- Door
+- Lock
+- Security Camera
+- Alarm
+- Security Guard
+
+These protect your house.
+
+A website also needs protection.
+
+| House | Website |
+|---------|-----------|
+| Door | Login Page |
+| Lock | Password |
+| CCTV | Logs |
+| Security Guard | Authentication |
+| Safe | Database |
+
+---
+
+# Why is Website Security Important?
+
+Without security:
+
+- Passwords can be stolen.
+- Personal information can be leaked.
+- Credit card information can be exposed.
+- The website can stop working.
+- The database can be destroyed.
+
+Millions of cyber attacks happen every day.
+
+Security is not optional.
+
+It is essential.
+
+---
+
+# ⭐ Golden Rule of Web Security
+
+## Never Trust User Input
+
+This is the most important lesson in web development.
+
+Any data coming from the browser should be considered unsafe.
+
+This includes:
+
+- HTML Forms
+- URL Parameters
+- Cookies
+- Uploaded Files
+- HTTP Headers
+
+Always validate and sanitize incoming data before using it.
+
+---
+
+# Chapter 2 — Cross-Site Scripting (XSS)
+
+## What is XSS?
+
+Cross-Site Scripting (XSS) is an attack where a hacker injects malicious JavaScript into a website.
+
+When another user visits the page, the script executes inside their browser.
+
+---
+
+## Example
+
+Suppose your website has a comment section.
+
+A normal user writes:
+
+```text
+Great tutorial!
+```
+
+A hacker writes:
+
+```html
+<script>
+alert("You are hacked!");
+</script>
+```
+
+If your website displays the comment without filtering it,
+
+every visitor executes that JavaScript.
+
+---
+
+## What Can a Hacker Do?
+
+Using XSS, attackers can:
+
+- Steal Cookies
+- Steal Login Sessions
+- Read User Information
+- Change Passwords
+- Perform Actions as Another User
+
+---
+
+## Types of XSS
+
+### 1. Reflected XSS
+
+The malicious script comes from the current request and is immediately reflected back to the browser.
+
+Example:
+
+```text
+website.com/search?q=<script>...</script>
+```
+
+---
+
+### 2. Stored (Persistent) XSS
+
+The malicious script is stored in the database.
+
+Whenever someone opens the page,
+
+the script runs automatically.
+
+Stored XSS is generally more dangerous because it affects many users.
+
+---
+
+## Prevention
+
+Never trust HTML provided by users.
+
+Always:
+
+- Sanitize Input
+- Escape HTML
+- Use built-in framework protections
+
+---
+
+# Chapter 3 — SQL Injection
+
+## What is SQL Injection?
+
+SQL Injection is an attack that manipulates SQL queries to access or modify database information.
+
+---
+
+## Unsafe Code
+
+```python
+query = "SELECT * FROM users WHERE username='" + username + "'"
+```
+
+Looks harmless...
+
+Until a hacker enters:
+
+```text
+' OR '1'='1
+```
+
+Now the SQL query changes meaning.
+
+Depending on how it is written, it may bypass authentication or expose data.
+
+Even worse,
+
+a hacker could attempt commands like:
+
+```sql
+DROP TABLE users;
+```
+
+---
+
+## Prevention
+
+Never build SQL queries using string concatenation.
+
+Instead, use parameterized queries.
+
+Example:
+
+```python
+cursor.execute(
+    "SELECT * FROM users WHERE username=?",
+    (username,)
+)
+```
+
+Modern frameworks such as Django automatically use safer database APIs.
+
+---
+
+# Chapter 4 — Cross-Site Request Forgery (CSRF)
+
+## What is CSRF?
+
+CSRF tricks a logged-in user into performing an action they never intended.
+
+Example:
+
+You are logged into your online banking website.
+
+You visit a malicious webpage.
+
+You click a fake button.
+
+Without realizing it,
+
+your browser sends a money-transfer request using your existing login session.
+
+The bank thinks **you** requested it.
+
+---
+
+## Prevention
+
+Use CSRF Tokens.
+
+A CSRF token is a secret generated by the server.
+
+The server checks that the request contains the correct token before accepting it.
+
+Frameworks like Django include CSRF protection by default.
+
+---
+
+# Chapter 5 — Other Common Attacks
+
+## Clickjacking
+
+Attackers hide invisible buttons behind visible webpages.
+
+You think you clicked:
+
+```
+Watch Video
+```
+
+But actually clicked:
+
+```
+Transfer Money
+```
+
+---
+
+## Denial of Service (DoS)
+
+Attackers send an enormous number of requests.
+
+The server becomes overloaded.
+
+Real users cannot access the website.
+
+---
+
+## Directory Traversal
+
+Attackers try to access protected files using paths like:
+
+```text
+../../secret.txt
+```
+
+Developers should validate file paths before using them.
+
+---
+
+## Command Injection
+
+If an application passes user input directly to the operating system,
+
+attackers may execute unintended system commands.
+
+Always validate and sanitize user input.
+
+---
+
+# Chapter 6 — Input Sanitization
+
+## What is Input Sanitization?
+
+Input Sanitization means cleaning user input before using it.
+
+Example:
+
+Input:
+
+```html
+<script>alert("Hello")</script>
+```
+
+After sanitization:
+
+```text
+&lt;script&gt;alert("Hello")&lt;/script&gt;
+```
+
+The browser displays it as text instead of executing it.
+
+---
+
+# Chapter 7 — HTTPS
+
+Have you noticed:
+
+```
+https://
+```
+
+instead of
+
+```
+http://
+```
+
+The extra **S** means **Secure**.
+
+HTTPS encrypts communication between the browser and the server.
+
+This prevents attackers from reading sensitive information during transmission.
+
+---
+
+# Chapter 8 — Strong Passwords
+
+Developers should encourage:
+
+- Long passwords
+- Unique passwords
+- Two-Factor Authentication (2FA)
+
+These make user accounts much harder to compromise.
+
+---
+
+# Chapter 9 — Keep Software Updated
+
+Outdated software often contains known vulnerabilities.
+
+Regular updates:
+
+- Fix security bugs
+- Patch vulnerabilities
+- Improve protection against new attacks
+
+Always keep:
+
+- Operating System
+- Web Server
+- Programming Framework
+- Libraries
+- Dependencies
+
+up to date.
+
+---
+
+# 🧠 Professor's Summary
+
+Imagine your website is a bank.
+
+The database is the vault.
+
+Your code is the security guard.
+
+Every visitor is unknown.
+
+Some visitors are honest.
+
+Some visitors are hackers.
+
+A professional developer never assumes user input is safe.
+
+Instead, they validate, sanitize, and verify everything before trusting it.
+
+This single principle prevents many common security vulnerabilities.
+
+---
+
+# 📌 Quick Revision Table
+
+| Attack | Goal | Prevention |
+|---------|------|------------|
+| XSS | Execute malicious JavaScript | Sanitize and escape user input |
+| SQL Injection | Manipulate database queries | Parameterized Queries / ORM |
+| CSRF | Trick users into performing actions | CSRF Tokens |
+| Clickjacking | Trick users into clicking hidden elements | Security Headers |
+| DoS | Overload the server | Rate Limiting, Traffic Filtering |
+| Directory Traversal | Access protected files | Validate File Paths |
+| Command Injection | Execute operating system commands | Validate User Input |
+
+---
+
+# 🎯 Key Takeaways
+
+✅ Never trust user input.
+
+✅ Always sanitize and validate incoming data.
+
+✅ Use parameterized SQL queries.
+
+✅ Escape HTML to prevent XSS.
+
+✅ Protect forms using CSRF Tokens.
+
+✅ Use HTTPS.
+
+✅ Encourage strong passwords.
+
+✅ Keep software updated.
+
+---
+
+# 📚 Homework
+
+## Question 1
+
+Explain the difference between:
+
+- XSS
+- SQL Injection
+
+using your own words.
+
+---
+
+## Question 2
+
+Why is
+
+> "Never Trust User Input"
+
+considered the golden rule of web security?
+
+---
+
+## Question 3
+
+What problem does a CSRF Token solve?
+
+---
+
+## Question 4
+
+Why are parameterized queries safer than string concatenation?
+
+---
+
+## Question 5
+
+Research the **OWASP Top 10** and write a short summary (5–10 sentences) about one security risk.
+
+---
+
+# 📖 Further Reading
+
+- MDN Web Docs — Website Security
+- OWASP Top 10
+- Django Security Documentation
+- Flask Security Documentation
+
+---
+
+# 🎉 End of Lecture
+
+**Next Lecture:**
+
+> Authentication & Authorization (User Login Systems)
